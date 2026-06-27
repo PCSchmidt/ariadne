@@ -1,0 +1,20 @@
+# Model slugs — verify current availability at https://openrouter.ai/models
+# Guide: low token cost + high performance, and keep the comparison fair.
+#  - single_model is itself a strong, cheap coder => a TOUGH baseline (honest).
+#  - worker_model is the cheapest strong coder (B's generator) -> B's cost edge.
+#  - evaluator_model == single_model so that "B vs A1" isolates the value of a
+#    *separate evaluator architecture*, not the evaluator's raw model quality.
+single_model: "deepseek/deepseek-v4-pro"
+worker_model: "qwen/qwen3-coder"
+evaluator_model: "deepseek/deepseek-v4-pro"
+
+attempts: 3          # N: max attempts per arm (A1, B)
+trials: 3            # repeats per task to estimate variance
+temperature: 0.0
+json_mode: true      # request response_format=json_object; toggle off if a model rejects it
+
+arms: ["A0", "A1", "B"]
+
+budget:
+  per_task_usd: 0.50   # advisory warning in this scaffold
+  per_run_usd: 15.0    # HARD stop: run aborts when cumulative spend crosses this

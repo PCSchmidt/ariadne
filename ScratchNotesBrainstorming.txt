@@ -1,0 +1,50 @@
+Regarding those topics/questions:
+1. Thesis / validation
+
+What's the falsifiable success metric? (e.g., "≥ baseline pass-rate at ≤ baseline cost on N coding tasks.") What's the baseline — Claude Code? Aider? raw single-model?
+Where's the eval harness? It arguably has to be gate 0, before the orchestrator exists.
+
+- Explain what you mean by a falsifiable success metric?
+
+- The baseline is undetermined. There are open source products designed to work with Claude Code, Github Copilot, Codex, etc. like Meridian (still a work in progress) and graphify that work those tools and help manage and make the build process better and more efficient and to minimize token costs. 
+
+- What do you mean by the eval harness?
+
+2. Identity vs. existing tools
+
+Wedge over Aider / Claude Code / Cline / OpenHands / OpenRouter's own auto-routing? What job do they fail that justifies a new tool?
+
+- In my thinking ariadne doesn't compete with Aider / Claude Code / Cline /Codex / Github Copilot but is used within them as a better way of doing things and uses access to multiple LLM models through platforms like OpenRouter via the users API key. I am unfamiliar with OpenHands but a quick glance tells me it is something like what I am envisioning. 
+
+- I envision a tool that assists the software developer by helping manage the build process by ensuring the project stays on track, that the LLM models don't go astray, that the token usage is minimized, that the LLM outputs are better and more accurate and applicable, etc. 
+
+3. Architecture decisions
+
+Meridian relationship: consumer, reimplementation, or multi-model extension? (Pick one.)
+Router: trained or prompted? If trained, what's the data/reward/compute plan?
+Caching vs. routing tension: per-model caches, a smaller shared prefix, or pin a session to one provider and route less aggressively?
+Is Graphify built and reliable enough to depend on? What languages does its AST layer actually cover, and what happens on a multi-language repo?
+
+- I'm not sure what you mean by Meridian relationship?
+
+- I'm not sure what you mean by Router: trained or prompted? If trained, what's the data/reward/compute plan? Explain this in more detail. 
+
+- I'm not sure what you mean by Caching vs. routing tension: per-model caches, a smaller shared prefix, or pin a session to one provider and route less aggressively? Please explain in more detail. 
+
+- Graphify is currently a very popular open source repo that is getting a lot of social media attention and Github stars. You'll need to check the repo and perhaps search the internet for more information. 
+
+4. Infra / ops (verify, don't trust the doc)
+
+Confirm OpenRouter's real session-stickiness, prompt-caching, response-caching, presets, and ZDR behavior against live docs.
+Cost ceiling / halting policy, secret handling, and data-governance posture for sending proprietary code to third-party providers.
+
+- It's best to check the OpenRouter documentation for these answers. I envision a BYOK setup where the spend is managed by the user. I am flexible on building a SAAS product option that charges a subscription fee but that would be a future thing 
+
+5. Scope
+
+What's the thinnest slice that proves or kills the thesis? My nominee: OpenRouter client + verified caching + one Pydantic routing schema + single-model execution + local test runner + a cost/pass-rate harness on one language. No recursion, no Graphify, no multi-model until the baseline comparison is wired.
+
+- I'm not clear on this either, please expand. You may have to research the other questions before getting to this one. 
+
+---------------------------------------------------------------------------------------------------------------
+

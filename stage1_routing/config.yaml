@@ -1,0 +1,27 @@
+# Stage 1: routing-headroom matrix. Each model runs ALONE on every task (one
+# attempt). No conductor, no evaluator -- this measures capability spread only.
+# Verify slugs at https://openrouter.ai/models before running.
+# Pool v3 (widen N + competitor): the 4 models that drove the v2 union (mimo +
+# deepseek dropped -- both had 0 unique solves, so union/oracle/gap unchanged),
+# plus openrouter/auto as the competing router baseline (excluded from the base
+# union by analyze.py; see ROUTERS there).
+models:
+  - qwen/qwen3.7-max            # $1.25  (v2 best single)
+  - moonshotai/kimi-k2.7-code   # $0.74  (python specialist)
+  - anthropic/claude-sonnet-4.6 # $3.00  (rust specialist)
+  - z-ai/glm-5.2                # $0.95
+  - openrouter/auto             # competitor router (baseline, not a base model)
+
+languages: [python, go, rust]
+n_per_lang: 30      # python 30, go 30, rust caps at 22 whitelisted -> ~82 tasks
+seed: 7
+workers: 6          # parallel cells (matrix_runner_par.py)
+
+trials: 1                # 1 attempt per (model, task); CIs come from bootstrap over tasks
+temperature: 0.0
+json_mode: true
+max_tokens: 16000        # higher so reasoning-heavy models don't truncate
+repair_retries: 2        # re-ask for valid JSON before counting a malformed reply as failed
+
+budget:
+  per_run_usd: 30.0      # HARD stop
