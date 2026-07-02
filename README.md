@@ -25,6 +25,54 @@ Sakana's (closed, hosted) Fugu, with a sharper, evidence-backed identity: a
 
 ---
 
+## Genesis: where this came from
+
+Ariadne started in a graduate AI-engineering course, from a simple observation:
+**no single AI model is the best at everything.** Ask five top models to write the
+same piece of code and they'll succeed and fail on *different* problems. So what if,
+instead of betting on one model, you had something that picked the right model for
+each job — and, when a model got it wrong, quietly handed the work to a different one
+until it was right?
+
+A useful mental picture: think of a **general contractor**. You don't hire the
+plumber to do the wiring. A good contractor knows which specialist to call for each
+part of the job, checks their work, and brings in someone else if it isn't done
+right. Ariadne is a general contractor for AI models: it sends your task to a capable
+model, lets your tools *check the result*, and escalates to a different model when the
+check fails. The checking is the secret — it's what lets Ariadne beat any single
+model instead of just guessing.
+
+This idea isn't invented from scratch. It builds on two 2026 research papers from
+[Sakana AI](https://sakana.ai/), which also power Sakana's own (closed, paid)
+product, [**Fugu**](https://sakana.ai/fugu/):
+
+- **[TRINITY: An Evolved LLM Coordinator](https://arxiv.org/abs/2512.04695)** — shows
+  that a tiny, cheap "coordinator" can hand a task to a pool of larger models turn by
+  turn, giving each a role (plan it, do it, or check it), and that this *team* of
+  models reliably outperforms any single one — across coding, math, and reasoning.
+- **[Learning to Orchestrate Agents in Natural Language with the Conductor](https://arxiv.org/abs/2512.04388)**
+  — shows that a model can *learn* how to route work and write tailored instructions
+  for each specialist, even discovering when to try again with a corrected plan after
+  a failure. It's the "how do you coordinate the team well" half of the picture.
+
+Sakana's Fugu turns these ideas into a hosted, closed product. **Ariadne is the open,
+self-hostable, bring-your-own-key take on the same insight** — and, guided by our own
+experiments, a deliberately simpler one: we found that *letting your tests do the
+routing* captures most of the benefit without needing a trained coordinator at all.
+
+### Who it's for
+
+- **Developers** — plug Ariadne into the coding assistant you already use (Claude
+  Code, Cursor, Codex) and get more tasks actually completed, because a failed attempt
+  gets a second, *different* model instead of the same one trying again.
+- **Hobbyists & tinkerers** — it's open source and BYOK: run it yourself, use your own
+  API keys, keep your code on your own machine, no subscription and no vendor lock-in.
+- **Creators & learners** — the whole project (including the experiments and the
+  honest record of what *didn't* work) is public, so you can read it, learn from it,
+  fork it, or build on it.
+
+---
+
 ## Why this exists
 
 **The one-line reframe:** we set out to build a *cheaper* Fugu and the evidence
