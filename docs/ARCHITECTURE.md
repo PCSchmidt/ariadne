@@ -1,8 +1,10 @@
 # Ariadne — Architecture & Framework Proposition
 
-Current proposition as of 2026-06-27, derived from the evidence in
-[FINDINGS.md](FINDINGS.md). This is a *proposition*, not built yet; open questions
-are listed at the end and several could still change the shape.
+Current proposition as of 2026-07-02, derived from the evidence in
+[FINDINGS.md](FINDINGS.md) and the reframe in [DIRECTION.md](DIRECTION.md). This is a
+*proposition*, not built yet; open questions are listed at the end and several could
+still change the shape. Related: pool/model-churn strategy in
+[POOL_MANAGEMENT.md](POOL_MANAGEMENT.md); market & pricing in [BUSINESS.md](BUSINESS.md).
 
 ---
 
@@ -41,7 +43,8 @@ keeping Ariadne a stateless-per-request, OpenAI-compatible endpoint.
 
 **MVP (validated path):**
 1. **OpenAI-compatible endpoint** (chat completions; ideally Responses too) with a
-   BYOK pass-through to OpenRouter.
+   BYOK pass-through, via a **pluggable transport adapter** (default OpenRouter; also
+   LiteLLM / platform-native gateways). See *Design principle: transport-agnostic*.
 2. **Turn router:** a policy that reads conversation history and picks the model.
    v1 policy = a fixed escalation order (e.g. `qwen3.7-max → claude → kimi`),
    advancing when the last turn shows a failed verifier. *No training required.*
@@ -49,6 +52,20 @@ keeping Ariadne a stateless-per-request, OpenAI-compatible endpoint.
    conversation (test output, non-zero exits, error blocks) to trigger escalation.
 4. **Model pool config + cost/quality dial:** ordered tiers, budget caps, the
    Pareto knob (how far to escalate).
+
+**Design principle: transport-agnostic (MVP decision).** Ariadne is not a gateway/router
+(OpenRouter, LiteLLM, Portkey, Cloudflare/Vercel) — it is a **verify-and-escalate layer
+that sits *on top* of one**. So the provider transport is a **pluggable adapter from
+day one**, not hard-wired to OpenRouter. Consequences: (a) hedges OpenRouter's fee (5.5%)
+and latency-hop vulnerability — and the fee is noise inside a +33% quality envelope
+anyway, while the *latency* hop compounds escalation latency and is the real thing to
+minimize; (b) enables a fully self-hosted **Ariadne + LiteLLM = data-never-leaves-your-box**
+story, a sharper open/self-hostable wedge vs. Fugu; (c) lets Ariadne **compose with** the
+governance tier (LiteLLM/OpenRouter/Ariadne stacked) instead of being squeezed by it.
+The main competitive watch-item is a governance gateway (Portkey/Kong) bolting on
+escalation — but they route at *prompt time* and can't see execution results, so the
+moat holds. The candidate-generation scout (see POOL_MANAGEMENT) should likewise pull
+from multiple gateway catalogs + public benchmarks, not OpenRouter's leaderboard alone.
 
 **Later / optional (deferred per findings):**
 - **Trained router** (TRINITY-style classifier / Conductor-style generator) — a cost
@@ -94,9 +111,13 @@ keeping Ariadne a stateless-per-request, OpenAI-compatible endpoint.
    own thin agent/sandbox mode — a heavier build to evaluate.
 5. **Generalization.** Confirm on long-horizon agentic tasks and real repos before
    committing; one-shot polyglot is a narrow slice.
-6. **Pool management.** Frontier models churn monthly; the ordered tiers and the
-   verifier thresholds need a maintenance/refresh process (Fugu advertises exactly
-   this as a feature).
+6. **Pool management.** Frontier models churn weekly; the ordered tiers and verifier
+   thresholds need a maintenance/refresh process (Fugu advertises exactly this as a
+   feature). Resolved in [POOL_MANAGEMENT.md](POOL_MANAGEMENT.md): churn is actually a
+   comparative advantage here (tests re-elect the best model every run — nothing
+   frozen decays), and the leaderboard is used only as a *scout* for candidates while
+   a private verifier eval *elects* the pool. Never select models directly from a
+   popularity/benchmark leaderboard — that is OpenRouter Auto (35% vs. our 85%).
 
 ## Immediate next steps (proposed)
 
@@ -105,5 +126,15 @@ keeping Ariadne a stateless-per-request, OpenAI-compatible endpoint.
    holds and whether reflexion improves it.
 2. **MVP endpoint**: OpenAI-compatible proxy + turn router + failure detection, point
    Codex/Claude Code at it, dogfood on a real change.
-3. Then revisit the deferred layers (predictor, Graphify, no-verifier verification)
+3. **`pool_refresh` routine** (post-MVP; design fixed now, see
+   [POOL_MANAGEMENT.md](POOL_MANAGEMENT.md)): reuse `stage1_routing/` harnesses to
+   scrape the OpenRouter coding leaderboard → shortlist → private-eval matrix →
+   elect-by-unique-solve → emit an ordered pool + current prices to `config.yaml`,
+   plus a lightweight **canary** (3–5 tasks/model between refreshes to catch silent
+   regressions/deprecations). Run monthly or event-triggered on a major new coding
+   entrant. Shape the MVP's pool config now to accept this.
+4. Then revisit the deferred layers (predictor, Graphify, no-verifier verification)
    based on where dogfooding hurts.
+
+The go-to-market track (OSS release → Fresh Pool feed → hosted Cloud tier) runs in
+parallel and is gated on the same live-cascade confirmation — see [BUSINESS.md](BUSINESS.md).

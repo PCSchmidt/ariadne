@@ -1,12 +1,14 @@
 # Ariadne
 
 > A thread through the labyrinth of large-model software engineering — an open,
-> verify-and-escalate router that amplifies coding capability beyond any single model.
+> verify-and-escalate orchestrator that amplifies coding capability beyond any single
+> model.
 
-**Status: design + validation (as of 2026-06-27).** The core bet has been tested
+**Status: design + validation (as of 2026-07-02).** The core bet has been tested
 with real experiments and **confirmed**, but with an important course correction
-(see below). No production code yet — the repo currently holds the brainstorm, the
-experiment harnesses, and the findings that now drive the build.
+(see below). No production code yet — the repo holds the brainstorm, the experiment
+harnesses, the findings, and the strategy docs (direction, pool management, business)
+that now drive the build.
 
 ---
 
@@ -24,6 +26,18 @@ Sakana's (closed, hosted) Fugu, with a sharper, evidence-backed identity: a
 ---
 
 ## Why this exists
+
+**The one-line reframe:** we set out to build a *cheaper* Fugu and the evidence
+killed the cost angle — but revealed a *capability* edge in its place. A realizable
+verifier-gated cascade saves **0%** over the best single model (the "oracle" savings
+need perfect foresight you can't have at inference time), so Ariadne is **not** a
+cost saver. What it *is* is a **capability amplifier with a quality/cost dial**: on a
+fair 82-task benchmark it lifts task completion from **73.2% → 85.4% (+12.2 pts)** at
+**+33% cost/solved** — and you can turn the dial down to **+6 pts for only ~+11%
+cost** (`qwen → claude`). You pay a little more to solve tasks no single model in the
+pool can. The moat is that this edge is only reachable by **routing *after* seeing
+test results**, which prompt-time routers structurally cannot do. Full detail:
+[docs/DIRECTION.md](docs/DIRECTION.md).
 
 - **No model dominates.** Different frontier models win different task types; we
   measured a real +13-point gap between the best single model and a perfect
@@ -91,18 +105,27 @@ re-prioritized them:
    evaluator (this is where Meridian's evaluator earns its place).
 2. **Latency.** A cascade is multiple sequential model calls — a real cost for
    interactive use.
-3. **Cost positioning.** Quality costs more; Ariadne needs an explicit quality/cost
-   dial, and possibly a cheap predictor to skip tiers unlikely to succeed.
+3. **Cost positioning.** Quality costs more; the quality/cost dial is now quantified
+   (see [docs/DIRECTION.md](docs/DIRECTION.md) — e.g. +6 pts for ~+11% cost up to
+   +12.2 pts for +33%). Still open: a cheap predictor to skip tiers unlikely to succeed.
 4. **Generalization.** Validated on one-shot polyglot coding tasks; not yet on
    long-horizon agentic tasks or real repos (where Fugu claims its biggest wins).
 5. **Fair competitor test.** Some of OpenRouter Auto's poor score may be
    forced-JSON format artifacts; worth a cleaner re-test.
+
+*Resolved / addressed since:* **model churn & pool selection** →
+[docs/POOL_MANAGEMENT.md](docs/POOL_MANAGEMENT.md); **transport lock-in / gateway
+competition** → transport-agnostic adapter in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md);
+**monetization & pricing** → [docs/BUSINESS.md](docs/BUSINESS.md).
 
 ## Repository map
 
 | Path | What |
 |---|---|
 | [README.md](README.md) | This overview |
+| [docs/DIRECTION.md](docs/DIRECTION.md) | The capability-vs-cost reframe, the quality/cost Pareto dial, and market edge |
+| [docs/POOL_MANAGEMENT.md](docs/POOL_MANAGEMENT.md) | How model churn is handled; leaderboard-as-scout vs. verifier-as-judge; pool_refresh + canary |
+| [docs/BUSINESS.md](docs/BUSINESS.md) | Market analysis, open-core pricing, Fresh Pool feed, break-even, go-to-market sequence |
 | [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) | Who/what/where/when/how/why of every experiment + methodology & controls |
 | [docs/FINDINGS.md](docs/FINDINGS.md) | The experiment log (v1→v2→v3), numbers, and what each taught us |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Current architecture/framework proposition + open questions |
