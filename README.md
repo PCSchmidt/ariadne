@@ -174,6 +174,7 @@ competition** → transport-agnostic adapter in [docs/ARCHITECTURE.md](docs/ARCH
 | [docs/DIRECTION.md](docs/DIRECTION.md) | The capability-vs-cost reframe, the quality/cost Pareto dial, and market edge |
 | [docs/POOL_MANAGEMENT.md](docs/POOL_MANAGEMENT.md) | How model churn is handled; leaderboard-as-scout vs. verifier-as-judge; pool_refresh + canary |
 | [docs/BUSINESS.md](docs/BUSINESS.md) | Market analysis, open-core pricing, Fresh Pool feed, break-even, go-to-market sequence |
+| [docs/SECURITY.md](docs/SECURITY.md) | Threat model + OWASP LLM/Web Top-10 mapping; per-deployment-mode trust boundaries; in/out-of-scope |
 | [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) | Who/what/where/when/how/why of every experiment + methodology & controls |
 | [docs/FINDINGS.md](docs/FINDINGS.md) | The experiment log (v1→v2→v3), numbers, and what each taught us |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Current architecture/framework proposition + open questions |
