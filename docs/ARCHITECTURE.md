@@ -76,6 +76,51 @@ from multiple gateway catalogs + public benchmarks, not OpenRouter's leaderboard
 - **Meridian** gates / generator-evaluator — re-homed as the **verifier for tasks
   without tests** (LLM-judge), and as governance for long-horizon runs.
 
+## Meridian integration (staged, by pattern — not a wholesale dependency)
+
+The DIRECTION reframe deliberately deferred Meridian's "grand architecture." So the
+stance is **raid Meridian for specific patterns, each unlocked by the milestone where
+it earns its place** — not adopt the framework wholesale. Meridian is our own project
+(free reuse + portfolio synergy, like Graphify), but verify its maturity and prefer
+extracting a clean interface (an evaluator/verifier *contract*) over embedding it.
+
+Its four components map to the roadmap:
+
+1. **Episodic / reflexion memory → the live-cascade gate (most actionable now).** The
+   pending experiment is "tier-2 sees tier-1's failure output (reflexion)." Meridian's
+   pattern: don't dump raw failed code into the next model — compress the failure into
+   a short rule (~30-token reflexion) appended to a ledger, keeping the escalated
+   model's attention on strategy. Borrow this in the confirmation experiment; it may
+   push the offline 85.4% higher.
+2. **Evaluator thresholds + halting → MVP budget/depth caps (doubles as security).**
+   Meridian's "max N attempts, then bubble to the human" is exactly the halting policy
+   the cost/quality dial needs *and* the mitigation for unbounded-consumption
+   (LLM10 in [SECURITY.md](SECURITY.md)). Reuse directly in the MVP — small, dual-use.
+3. **Generator–evaluator split → the no-verifier case (highest strategic fit,
+   post-MVP).** For tasks without tests, Meridian's *separate* evaluator ("cannot
+   praise its own work") becomes the LLM-judge verifier that gates escalation — the
+   biggest market expansion beyond coding-with-tests. Caveat: an LLM-judge is a
+   **noisy, gameable** verifier (prompt-injection LLM01, misinformation LLM09); whether
+   escalation still works on a noisy verifier is Open Question #1 — validate, don't
+   assume.
+4. **Enforced gates / DAG (CONTRACT→SPEC→IMPL→TESTS) → long-horizon only.** The
+   heaviest piece: the governance harness for multi-step agentic runs (Open Question
+   #5 generalization, where Fugu claims its biggest wins). Valuable there, but importing
+   it before any long-horizon data would be exactly the premature grand-architecture the
+   reframe cut. Defer.
+
+**The one architectural decision:** the MVP endpoint is **stateless per request**,
+leaning on the *client's* agent loop; Meridian is a **stateful harness**. Do **not**
+bake Meridian into the core endpoint (that breaks the thin-endpoint identity). Instead
+treat Meridian as Ariadne's optional **agentic mode** — the answer to Open Question #4
+("where does execution live when a client doesn't loop?"). Clients without their own
+loop, or no-verifier / long-horizon tasks, run *behind* a Meridian harness; the core
+endpoint stays thin and Meridian is a pluggable heavyweight mode, not a mandatory layer.
+
+**Sequencing:** reflexion at the live-cascade gate → halting at MVP → evaluator-as-
+verifier for no-verifier tasks (validated against a noisy-verifier test) → DAG only for
+long-horizon.
+
 ## Relationship to the four influences (re-prioritized)
 
 | Influence | Role now | Why |

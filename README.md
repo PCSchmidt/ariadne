@@ -137,13 +137,36 @@ re-prioritized them:
 
 - **Conductor / TRINITY** (trained orchestrators) — *demoted.* The verifier, not a
   trained model, captures most of the value. Training becomes a later optimization.
-- **Verification / generator-evaluator split (Meridian)** — *promoted to the core.*
-  Escalation must be gated by a verifier; the open question is what serves as the
-  verifier when there are no tests (see Open Questions).
+- **Verification / generator-evaluator split ([Meridian](https://github.com/PCSchmidt/meridian))** —
+  *promoted to the core.* Escalation must be gated by a verifier; the open question is
+  what serves as the verifier when there are no tests (see Open Questions).
 - **Graphify** (codebase knowledge graph) — *deferred.* A context/cost layer for
   codebase-scale work, not needed to prove or realize the core value.
 - **Differential memory / recursive topologies** — *deferred.* The MVP is far
   simpler than the original grand architecture.
+
+### What is Meridian, and why it helps here
+
+[**Meridian**](https://github.com/PCSchmidt/meridian) is a companion open-source
+project: a **governance harness for AI agents** that stops them from marking broken
+work as "done." Its three ideas matter for Ariadne:
+
+- **A separate evaluator** — the agent writing the code is never the one that judges
+  it ("the generator can't praise its own work"). This is exactly the *verifier* that
+  gates Ariadne's escalation, and the natural answer for tasks that have **no tests**
+  (an LLM-judge stands in for a test suite).
+- **Enforced gates + halting** — work advances only after each step is checked, with a
+  hard cap on retries before it bubbles up to the human. That's Ariadne's budget/
+  depth limit and a key safety control against runaway cost.
+- **Reflexion memory** — a failure is compressed into a short lesson (not a raw dump
+  of broken code) and carried forward, so the *next* model escalated to learns from
+  the last one's mistake.
+
+Ariadne won't swallow Meridian wholesale — it borrows these patterns **incrementally**,
+each when the milestone needs it (reflexion at the live-cascade test, halting at MVP,
+the evaluator-as-verifier for no-test tasks, and full gates only for long, multi-step
+jobs). See the staged plan in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#meridian-integration-staged-by-pattern--not-a-wholesale-dependency).
 
 ## Open questions / hurdles (actively being explored)
 
